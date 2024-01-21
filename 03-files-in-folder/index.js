@@ -1,30 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 //
-const dir = path.join(__dirname);
+const filePath = path.join(__dirname + '/secret-folder');
 //
-
-function deepFiles(dirPath) {
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-
-  entries.forEach((entry) => {
-    const pathForRecursion = path.join(dirPath, entry.name);
-    const ext = path.extname(entry.name);
-    const name = path.basename(entry.name, ext);
-    fs.stat(pathForRecursion, (err, stats) => {
-      const size = (stats.size / 1024).toFixed(2);
-      //
-      if (err) {
-        console.log('fs.stat error: ', err);
-      } else {
-        if (entry.isDirectory()) {
-          deepFiles(pathForRecursion);
-        } else {
-          console.log(name, ' - ', ext, ' - ', size + 'kb');
-        }
-      }
-    });
+function readFiles() {
+  fs.readdir(filePath, (err, files) => {
+    if (err) console.log(err);
+    else {
+      files.forEach(async (file) => {
+        const extname = path.extname(file).slice(1);
+        const basename = path.basename(file, extname).slice(0, -1);
+        const size = fs.statSync(path.join(filePath, file)).size;
+        console.log(basename, ' - ', extname, ' - ', size);
+      });
+    }
   });
 }
 
-deepFiles(dir);
+readFiles();
