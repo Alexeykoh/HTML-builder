@@ -1,19 +1,28 @@
 const fs = require('fs');
-const readLine = require('readline');
-//
-const rlInterface = readLine.createInterface({
+const path = require('path');
+const readline = require('readline');
+
+const filePath = path.join(__dirname, 'text.txt');
+const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-//
-rlInterface.question('Write your text: ...', (input) => {
-  fs.writeFile(__dirname + '/text.txt', input, (err) => {
-    if (err) {
-      console.log(err.message);
-    } else {
-      console.log(
-        'Your text saved in text.txt Press ctrl+c for exit command line ',
-      );
-    }
+
+rl.setPrompt('Enter your text: ');
+rl.prompt();
+
+rl.on('line', (input) => {
+  if (input === 'exit') {
+    console.log('Goodbye!');
+    process.exit(0);
+  }
+  fs.writeFile(filePath, input + '\n', { flag: 'a' }, function (error) {
+    if (error) return console.log(error);
   });
+  rl.prompt();
+});
+
+rl.on('close', () => {
+  console.log('Goodbye!');
+  process.exit(0);
 });
